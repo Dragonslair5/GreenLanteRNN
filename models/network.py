@@ -6,7 +6,10 @@ from keras.callbacks import EarlyStopping
 
 class Rnn:
 
-    def __init__(self, length_of_sequence, in_out_neurons, n_hidden, batch_size=32, epoch=100):
+    def __init__(self, length_of_sequence=100, in_out_neurons=100, n_hidden=10, batch_size=32, epoch=100, model_load=False):
+
+        if model_load == True:
+            return
         
         self.length_of_sequence = length_of_sequence
         self.in_out_neurons = in_out_neurons

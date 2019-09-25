@@ -15,12 +15,15 @@ def generateTrainData(peek_count=16, peek_max=140, sparsely=20, filter_width=100
     peek = np.random.rand(peek_count) * peek_max
     sparsed_peek = np.pad(peek.reshape(peek.shape[0], 1), [(0, 0), (sparsely, sparsely)], "constant").reshape(peek.shape[0] * (sparsely * 2 + 1))
     #sparsed_peek = np.pad(sparsed_peek, (sparsely, sparsely), "constant")
+    noisy_peek = peek * noise_amp_ratio
+    sparsed_noisy_peek = np.pad(noisy_peek.reshape(noisy_peek.shape[0], 1), [(0, 0), (sparsely + noise_shift, sparsely - noise_shift)], "constant").reshape(noisy_peek.shape[0] * (sparsely * 2 + 1))
+
+    sparsed_peek_with_noise = sparsed_peek + sparsed_noisy_peek
 
     gaussian_filter = np.exp(-np.abs(np.arange(-filter_width, filter_width)) ** 2 / filter_sigma)
-    noisy_gaussian_filter = gaussian_filter + noise_amp_ratio * np.exp(-(np.arange(-filter_width - noise_shift, filter_width - noise_shift)) ** 2 / filter_sigma)
     
     conv_peek = np.convolve(gaussian_filter, sparsed_peek, mode="same")
-    noise_peek = np.convolve(noisy_gaussian_filter, sparsed_peek, mode="same")
+    noise_peek = np.convolve(gaussian_filter, sparsed_peek_with_noise, mode="same")
 
     return conv_peek, noise_peek
 
